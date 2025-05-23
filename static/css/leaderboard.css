@@ -1,0 +1,65 @@
+.top-1 {
+  background-color: rgba(255, 215, 0, 0.15) !important;
+}
+
+.top-1 .rank {
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.top-2 {
+  background-color: rgba(192, 192, 192, 0.15) !important;
+}
+
+.top-2 .rank {
+  font-weight: bold;
+  color: #C0C0C0;
+}
+
+.top-3 {
+  background-color: rgba(205, 127, 50, 0.15) !important;
+}
+
+.top-3 .rank {
+  font-weight: bold;
+  color: #CD7F32;
+}
+
+.time {
+  font-family: 'Roboto Mono', monospace, sans-serif;
+  font-weight: 500;
+}
+
+.rank {
+  font-weight: bold;
+  text-align: center;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .table th, .table td {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+  
+  .rank {
+    width: 40px;
+  }
+}
+@media (max-width: 576px) {
+  .table th:last-child, .table td:last-child {
+    display: none;
+  }
+  
+  .d-flex.flex-wrap {
+    justify-content: center;
+  }
+  
+  .table {
+    font-size: 0.85rem;
+  }
+}

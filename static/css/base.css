@@ -1,0 +1,9 @@
+
+body {
+  padding-top: 100px;
+}
+
+.fixed-top {
+  background-color: white;
+  z-index: 1030;
+}

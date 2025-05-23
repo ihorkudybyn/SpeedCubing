@@ -1,0 +1,57 @@
+/* Styles for the solve page */
+#timer.ready {
+  color: #28a745 !important; /* Green */
+}
+
+#timer.running {
+  color: black !important; /* Red */
+}
+
+.spacebar-instructions {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.penalty-dnf {
+  text-decoration: line-through;
+  color: #dc3545;
+}
+
+.penalty-plus2 {
+  color: #fd7e14;
+  font-weight: 500;
+}
+
+#timer {
+  font-size: 6rem;
+  font-weight: 300;
+}
+
+#scrambleDisplay {
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  word-spacing: 6px;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#cubeVisualizer {
+  border-radius: 5px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  min-height: 150px;
+}
+
+@media (max-width: 768px) {
+  #cubeVisualizer {
+    margin-top: 20px;
+    height: 120px;
+    width: 120px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

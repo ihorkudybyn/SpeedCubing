@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/solve.css') }}">
+{% endblock %}
+
+{% block title %}<title>Solve | SpeedCubing</title>{% endblock %}
+
+{% block header %}
+<div class="text-center mb-4">
+  <h1 class="display-5">New Solve</h1>
+  <p class="lead">Select a puzzle, scramble it, and time your solve.</p>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="form-group">
+        <select class="form-select" id="cubeType">
+          {% for cube_type in cube_types %}
+          <option value="{{ cube_type }}">{{ cube_type }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-md-8 text-end">
+      <button id="newScrambleBtn" class="btn btn-outline-primary">New Scramble</button>
+    </div>
+  </div>
+
+
+  <div class="card mb-3">
+    <div class="card-header bg-primary text-white">
+      <h5 class="card-title mb-0">Scramble</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8 d-flex align-items-center">
+          <div id="scrambleDisplay" class="text-center py-3 w-100"></div>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+          <div id="cubeVisualizer" class="text-center" style="height: 150px; width: 150px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="timer-container text-center my-5">
+    <div id="timer" class="display-1 mb-4">0.00</div>
+    
+    <div class="d-flex justify-content-center gap-3">
+      <button id="startStopBtn" class="btn btn-success btn-lg px-5 py-3">Start</button>
+      <div class="btn-group ms-2" role="group" aria-label="Penalties">
+        <button id="plusTwoBtn" class="btn btn-outline-warning btn-lg px-3" disabled>+2</button>
+        <button id="dnfBtn" class="btn btn-outline-danger btn-lg px-3" disabled>DNF</button>
+      </div>
+    </div>
+    
+    <div class="mt-3 spacebar-instructions">
+      <p class="mb-1 text-muted"><strong>How to use:</strong></p>
+      <ul class="text-muted small mb-0 list-unstyled">
+        <li class="mb-1">Hold the <kbd>Space</kbd> key until the timer turns green</li>
+        <li class="mb-1">Release to start timing</li>
+        <li class="mb-1">Press <kbd>Space</kbd> once more to stop the timer</li>
+        <li class="mb-1">Use +2 or DNF buttons to apply penalties if needed</li>
+      </ul>
+    </div>
+  </div>
+
+  {% if recent_solves %}
+  <div class="card mt-5">
+    <div class="card-header bg-light">
+      <h5 class="card-title mb-0">Recent Solves</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Cube</th>
+              <th>Time</th>
+              <th>Scramble</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for solve in recent_solves %}
+            <tr data-solve-id="{{ solve.id }}">
+              <td>{{ solve.date.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ solve.cube.cube_type }}</td>
+              <td {% if solve.time < 0 %}class="penalty-dnf">DNF{% else %}{% if solve.time > 100 %}class="penalty-plus2"{% endif %}>{{ "%.2f"|format(solve.time) }}s{% endif %}</td>
+              <td class="text-truncate" style="max-width: 200px;">{{ solve.cube.pattern }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.cubing.net/js/cubing/twisty" type="module"></script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+<script src="{{ url_for('static', filename='js/solve-api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/solve.js') }}"></script>
+{% endblock %}

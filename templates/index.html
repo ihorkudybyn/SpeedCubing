@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>SpeedCubing</title>
+{% endblock %}
+
+{% block stylesheet %}
+<style>
+  body {
+    overflow: hidden;
+  }
+</style>
+{% endblock %}
+
+{% block header %}
+<div class="text-center mb-4">
+    <h1 class="display-4">SpeedCubing</h1>
+    <p class="lead">Platform for honest fans of the fast Rubik's cube solving</p>
+</div>
+{% endblock %}
+
+{% block body %}
+<main>
+    <div class="cube-container">
+        <div class="rubiks-cube rubiks-cube-1">
+            {% for i in range(1, 28) %}
+            <div class="detail">
+                <div class="side front"></div>
+                <div class="side back"></div>
+                <div class="side top"></div>
+                <div class="side bottom"></div>
+                <div class="side left"></div>
+                <div class="side right"></div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center" style="padding-top:140px;">
+            <a href="/solve">
+                <button type="button" class="btn btn-primary btn-lg" style="padding:1rem 2rem; font-size:1.5rem;">
+                    Start Solving
+                </button>
+            </a>
+        </div>
+        <div class="reflection">
+            <div class="rubiks-cube rubiks-cube-1">
+                {% for i in range(1, 28) %}
+                <div class="detail">
+                    <div class="side front"></div>
+                    <div class="side back"></div>
+                    <div class="side top"></div>
+                    <div class="side bottom"></div>
+                    <div class="side left"></div>
+                    <div class="side right"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

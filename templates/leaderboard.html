@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}<title>Leaderboard | SpeedCubing</title>{% endblock %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/leaderboard.css') }}">
+{% endblock %}
+
+{% block header %}
+<div class="text-center mb-4">
+  <h1 class="display-5">Leaderboard</h1>
+  <p class="lead">See the fastest solvers in the community!</p>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        {% for type in available_cube_types %}
+        <a href="{{ url_for('leaderboard', cube_type=type) }}" 
+          class="btn {% if type == cube_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
+          {{ type }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="card-title mb-0">Top {{ cube_type }} Solves</h5>
+    </div>
+    <div class="card-body">
+      {% if top_solves %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th width="5%">Rank</th>
+              <th width="40%">User</th>
+              <th width="15%">Time</th>
+              <th width="20%">Date</th>
+              <th width="20%">Scramble</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for solve in top_solves %}
+            <tr class="{% if loop.index <= 3 %}top-{{ loop.index }}{% endif %}">
+              <td class="rank">{{ loop.index }}</td>
+              <td>{{ solve.email.split('@')[0] }}</td>
+              <td class="time">{{ "%.2f"|format(solve.time) }}s</td>
+              <td>{{ solve.date.strftime('%Y-%m-%d') }}</td>
+              <td class="text-truncate" style="max-width: 200px;" title="{{ solve.pattern }}">
+                {{ solve.pattern }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="alert alert-info">
+        No solves recorded for {{ cube_type }} yet. <a href="{{ url_for('solve') }}">Be the first!</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="card mt-4">
+    <div class="card-header bg-light">
+      <h6 class="mb-0">About the Leaderboard</h6>
+    </div>
+    <div class="card-body">
+      <p class="small mb-0">
+        This leaderboard shows the fastest solves for each puzzle type. Only fully completed solves are shown (DNFs are excluded).
+        Each user's personal best time is displayed. Times are updated as new solves are recorded.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+.penalty-dnf {
+  text-decoration: line-through;
+  color: #dc3545;
+}
+
+.penalty-plus2 {
+  color: #fd7e14;
+  font-weight: 500;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.delete-btn {
+  color: #dc3545;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.delete-btn:hover {
+  color: #fff;
+  background-color: #dc3545;
+}
+
+
+.delete-btn i {
+  display: block;
+  line-height: 1;
+}
+
+.delete-btn:focus {
+  outline: none;
+}
+
+.solve-row {
+  transition: opacity 0.3s ease-out;
+}
+
+.solve-row.fade-out {
+  opacity: 0;
+}
