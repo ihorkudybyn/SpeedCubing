@@ -20,8 +20,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    email_confirmed = db.Column(db.Boolean, default=True)
-    email_confirm_token = db.Column(db.String(100), nullable=True)
     
     solves = db.relationship('Solve', backref='solver', lazy=True)
     
@@ -106,7 +104,7 @@ def validate_password(password):
     return True, "Password is valid"
 
 
-
+#Flask App
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -189,6 +187,72 @@ def solve():
     
     return render_template('solve.html', cube_types=cube_types, recent_solves=recent_solves)
 
+@app.route('/history')
+def history():
+    if 'email' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.filter_by(email=session['email']).first()
+    
+    page = request.args.get('page', 1, type=int)
+    solves = Solve.query.filter_by(user_id=user.id)\
+                  .order_by(Solve.date.desc())\
+                  .paginate(page=page, per_page=10)
+    
+    stats = {}
+    for cube_type in ["3x3", "2x2", "4x4", "5x5", "Megaminx", "Pyraminx", "Skewb"]:
+        cube_solves = Solve.query.join(Cube).filter(
+            Solve.user_id == user.id,
+            Cube.cube_type == cube_type
+        ).all()
+        
+        if cube_solves:
+            times = [solve.time for solve in cube_solves]
+            stats[cube_type] = {
+                'count': len(times),
+                'best': min(times),
+                'average': sum(times) / len(times),
+                'worst': max(times)
+            }
+    
+    return render_template('history.html', solves=solves, stats=stats)
+
+
+@app.route('/leaderboard')
+@app.route('/leaderboard/<cube_type>')
+def leaderboard(cube_type=None):
+    available_cube_types = db.session.query(Cube.cube_type).distinct().all()
+    available_cube_types = [c[0] for c in available_cube_types]
+    
+    if not cube_type or cube_type not in available_cube_types:
+        cube_type = available_cube_types[0] if available_cube_types else '3x3'
+    
+    best_solves_query = db.session.query(
+        User.email,
+        Solve.time,
+        Solve.date,
+        Cube.pattern
+    ).join(
+        User, User.id == Solve.user_id
+    ).join(
+        Cube, Cube.id == Solve.cube_id
+    ).filter(
+        Cube.cube_type == cube_type,
+        Solve.time > 0
+    ).order_by(
+        Solve.time
+    ).limit(50)
+    
+    top_solves = best_solves_query.all()
+    
+    return render_template(
+        'leaderboard.html',
+        top_solves=top_solves,
+        cube_type=cube_type,
+        available_cube_types=available_cube_types
+    )
+
+#API Endpoints
 @app.route('/api/scramble/<cube_type>')
 def get_scramble(cube_type):
     if 'email' not in session:
@@ -271,35 +335,7 @@ def apply_penalty():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/history')
-def history():
-    if 'email' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.filter_by(email=session['email']).first()
-    
-    page = request.args.get('page', 1, type=int)
-    solves = Solve.query.filter_by(user_id=user.id)\
-                  .order_by(Solve.date.desc())\
-                  .paginate(page=page, per_page=10)
-    
-    stats = {}
-    for cube_type in ["3x3", "2x2", "4x4", "5x5", "Megaminx", "Pyraminx", "Skewb"]:
-        cube_solves = Solve.query.join(Cube).filter(
-            Solve.user_id == user.id,
-            Cube.cube_type == cube_type
-        ).all()
-        
-        if cube_solves:
-            times = [solve.time for solve in cube_solves]
-            stats[cube_type] = {
-                'count': len(times),
-                'best': min(times),
-                'average': sum(times) / len(times),
-                'worst': max(times)
-            }
-    
-    return render_template('history.html', solves=solves, stats=stats)
+
 
 @app.route('/api/solve/<int:solve_id>', methods=['DELETE'])
 def delete_solve(solve_id):
@@ -325,41 +361,6 @@ def delete_solve(solve_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
-
-
-@app.route('/leaderboard')
-@app.route('/leaderboard/<cube_type>')
-def leaderboard(cube_type=None):
-    available_cube_types = db.session.query(Cube.cube_type).distinct().all()
-    available_cube_types = [c[0] for c in available_cube_types]
-    
-    if not cube_type or cube_type not in available_cube_types:
-        cube_type = available_cube_types[0] if available_cube_types else '3x3'
-    
-    best_solves_query = db.session.query(
-        User.email,
-        Solve.time,
-        Solve.date,
-        Cube.pattern
-    ).join(
-        User, User.id == Solve.user_id
-    ).join(
-        Cube, Cube.id == Solve.cube_id
-    ).filter(
-        Cube.cube_type == cube_type,
-        Solve.time > 0
-    ).order_by(
-        Solve.time
-    ).limit(50)
-    
-    top_solves = best_solves_query.all()
-    
-    return render_template(
-        'leaderboard.html',
-        top_solves=top_solves,
-        cube_type=cube_type,
-        available_cube_types=available_cube_types
-    )
 
 
 @app.route('/api/account/delete', methods=['POST'])

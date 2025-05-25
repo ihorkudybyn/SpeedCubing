@@ -39,6 +39,15 @@ getNewScramble(cubeTypeSelect, scrambleDisplay).then(scramble => {
   });
   
   cubeTypeSelect.addEventListener('change', function() {
+    timer.reset();
+    
+    startStopBtn.textContent = 'Start';
+    startStopBtn.classList.remove('btn-danger', 'btn-warning');
+    startStopBtn.classList.add('btn-success');
+    
+    dnfBtn.disabled = true;
+    plusTwoBtn.disabled = true;
+    
     getNewScramble(cubeTypeSelect, scrambleDisplay).then(scramble => {
       currentScramble = scramble;
     });
